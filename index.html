@@ -51,7 +51,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-of
 <main>
 <h1>Программа набора массы</h1>
 <p class="sub" id="nx"></p>
-<div class="opts"><span>Отдых</span><button class="tb" data-r="60">60 с</button><button class="tb" data-r="90">90 с</button><button class="tb" data-r="120">120 с</button><button class="tb" id="wl">Экран не гаснет</button><button class="tb" id="pc">Картинки</button></div>
+<div class="opts"><span>Отдых</span><button class="tb" data-r="60">60 с</button><button class="tb" data-r="90">90 с</button><button class="tb" data-r="120">120 с</button><button class="tb" id="wl">Экран не гаснет</button><button class="tb" id="pc">Картинки</button><button class="tb" id="sn">Звук</button></div>
 <div class="tabs" id="tabs" role="tablist"></div>
 <div id="list"></div>
 <button class="fin" id="fin">Завершить тренировку</button>
@@ -63,6 +63,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-of
 <h2>Правила</h2>
 <p>Отдых между подходами 60-90 секунд. Первые 2 недели оставляй 3-4 повторения в запасе, дальше 1-2.</p>
 <p>Когда во всех подходах дошёл до верхней границы повторений, замедляй опускание до 3 секунд или переходи на вариант с одной рукой или ногой.</p>
+<p>В поле веса пиши вес одной гантели, а для штанги общий вес штанги.</p>
 <p>Раз в неделю взвешивайся утром, раз в 2 недели меряй талию, плечи и руки и делай фото в тех же условиях.</p>
 </section>
 </main>
@@ -129,6 +130,9 @@ try{S=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){S={}}
 if(!S.d)S.d={};if(!S.rest)S.rest=90;if(!S.log)S.log=[];if(!S.body)S.body=[];try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 var cur=S.t||'vA';
 function save(){try{S.t=cur;localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+if(!S.fix1){S.fix1=1;var FX={'Жим гантелей с пола':'15','Жим гантелей стоя':'15','Подъём на бицепс':'15'};
+S.log.forEach(function(x){(x.ex||[]).forEach(function(e){if(FX[e.n]&&(e.w==='30'||e.w==='3'))e.w=FX[e.n]})});
+W.forEach(function(x){x.ex.forEach(function(e,j){var d=S.d[x.id+j];if(d&&FX[e[0]]&&(d.w==='30'||d.w==='3'))d.w=FX[e[0]]})});save()}
 function lastEx(n){for(var i=S.log.length-1;i>=0;i--){var x=S.log[i].ex;if(x)for(var j=0;j<x.length;j++)if(x[j].n===n)return x[j]}return{w:'',r:''}}
 function msg(t){document.getElementById('msg').textContent=t}
 function report(){var o='Данные тренировок (программа набора массы, цель: набрать мышечную массу).\n',L=S.log.filter(function(x){return x.ex}).slice(-6);
@@ -151,7 +155,7 @@ function render(){
  w.ex.forEach(function(e,j){
   var k=w.id+j,d=get(k),c='',le=lastEx(e[0]);
   for(var s=0;s<e[1];s++)c+='<button class="chip'+(d.s[s]?' on':'')+'" data-k="'+k+'" data-s="'+s+'" aria-label="Подход '+(s+1)+'" aria-pressed="'+(!!d.s[s])+'">'+(s+1)+'</button>';
-  h+='<div class="ex"><div class="top"><span class="name">'+e[0]+'</span><span class="rep">'+e[1]+' × '+e[2]+'</span></div>'+(e[3]?'<p class="note">'+e[3]+'</p>':'')+pic(e[0])+'<div class="row">'+c+'<label class="w">Вес, кг <input type="number" inputmode="decimal" data-k="'+k+'" value="'+d.w+'" placeholder="'+(le.w||'')+'"></label></div><div class="rr"><span>Повт.</span><input type="text" data-p="'+k+'" value="'+(d.r||'')+'" placeholder="'+(le.r||'10 10 9 8')+'"></div></div>';
+  h+='<div class="ex"><div class="top"><span class="name">'+e[0]+'</span><span class="rep">'+e[1]+' × '+e[2]+'</span></div>'+(e[3]?'<p class="note">'+e[3]+'</p>':'')+pic(e[0])+'<div class="row">'+c+'<label class="w">Вес, кг (1 гантель) <input type="number" inputmode="decimal" data-k="'+k+'" value="'+d.w+'" placeholder="'+(le.w||'')+'"></label></div><div class="rr"><span>Повт.</span><input type="text" data-p="'+k+'" value="'+(d.r||'')+'" placeholder="'+(le.r||'10 10 9 8')+'"></div></div>';
  });
  document.getElementById('list').innerHTML=h;status();
 }
@@ -161,6 +165,7 @@ document.addEventListener('click',function(ev){
  if(b.dataset.k){var d=get(b.dataset.k),s=+b.dataset.s;d.s[s]=!d.s[s];save();render();if(d.s[s])startT(S.rest);return}
  if(b.dataset.r){S.rest=+b.dataset.r;save();status();return}
  if(b.id==='wl'){S.keep=!S.keep;if(!S.keep&&wake){wake.release();wake=null}else lock();save();status();return}
+ if(b.id==='sn'){S.snd=S.snd===false;save();status();au();beep(880,.2,0);return}
  if(b.id==='snd'){send(report());return}
  if(b.id==='bws'){var v=document.getElementById('bw').value;if(v){S.body.push({d:new Date().toLocaleDateString('ru-RU'),w:v});save();msg('Вес тела записан: '+v+' кг');document.getElementById('bw').value=''}return}
  if(b.id==='bk'){send(JSON.stringify({log:S.log,d:S.d,body:S.body,rest:S.rest,done:S.done}));return}
@@ -173,16 +178,18 @@ document.addEventListener('click',function(ev){
 document.addEventListener('input',function(ev){
  var i=ev.target;if(i.tagName==='INPUT'&&i.dataset.k){get(i.dataset.k).w=i.value;save()}if(i.tagName==='INPUT'&&i.dataset.p){get(i.dataset.p).r=i.value;save()}
 });
-var ORD=['vA','nA','vB','nB'],endAt=0,iv=null,wake=null,ac=null;
+var ORD=['vA','nA','vB','nB'],endAt=0,iv=null,wake=null,ac=null,lt=0;
 function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)}
-function tick(){var r=Math.ceil((endAt-Date.now())/1000),tv=document.getElementById('tv');if(r>0){tv.textContent=fmt(r)}else{tv.textContent='Отдых закончен';clearInterval(iv);iv=null;alarm()}}
+function tick(){var r=Math.ceil((endAt-Date.now())/1000),tv=document.getElementById('tv');if(r>0){tv.textContent=fmt(r);if(r<=3&&r!==lt){lt=r;beep(660,.12,0)}}else{lt=0;tv.textContent='Отдых закончен';clearInterval(iv);iv=null;alarm()}}
 function startT(sec){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.resume)ac.resume()}catch(e){}endAt=Date.now()+sec*1000;document.getElementById('tm').classList.add('show');clearInterval(iv);iv=setInterval(tick,250);tick()}
 function stopT(){clearInterval(iv);iv=null;document.getElementById('tm').classList.remove('show')}
-function alarm(){try{if(navigator.vibrate)navigator.vibrate([250,120,250,120,400])}catch(e){}try{if(ac){var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.4)}}catch(e){}}
+function au(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.resume)ac.resume()}catch(e){}}
+function beep(f,d,t){if(S.snd===false||!ac)return;try{var o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime+t;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(.35,n+.02);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+d+.05)}catch(e){}}
+function alarm(){try{if(navigator.vibrate)navigator.vibrate([250,120,250,120,400])}catch(e){}beep(880,.25,0);beep(880,.25,.35);beep(1175,.5,.7)}
 async function lock(){try{if(S.keep&&navigator.wakeLock&&!wake){wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',function(){wake=null})}}catch(e){}}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){lock();if(iv)tick()}});
-function finish(){var w=find(),ex=[];w.ex.forEach(function(e,j){var d=get(w.id+j),n=d.s.filter(Boolean).length;if(n||d.r)ex.push({n:e[0],p:e[1]+'×'+e[2],w:d.w,k:n,r:d.r||''});d.s=[];d.r=''});S.log.push({n:w.n,d:new Date().toLocaleDateString('ru-RU'),t:Date.now(),ex:ex});S.done=w.id;cur=ORD[(ORD.indexOf(w.id)+1)%4];stopT();save();render();window.scrollTo(0,0)}
-function status(){var n=ORD[(ORD.indexOf(S.done||'')+1)%4],nm=W.filter(function(x){return x.id===n})[0].n,L=S.log[S.log.length-1];document.getElementById('nx').textContent='Следующая по порядку: '+nm+'. Кружок запускает таймер отдыха.';document.getElementById('hist').textContent=L?('Тренировок: '+S.log.length+'. Последняя: '+L.n+', '+L.d):'Завершённых тренировок пока нет.';document.querySelectorAll('[data-r]').forEach(function(b){b.classList.toggle('on',+b.dataset.r===S.rest)});document.getElementById('wl').classList.toggle('on',!!S.keep);document.getElementById('pc').classList.toggle('on',S.pic!==false)}
+function finish(){au();beep(523,.15,0);beep(659,.15,.18);beep(784,.3,.36);var w=find(),ex=[];w.ex.forEach(function(e,j){var d=get(w.id+j),n=d.s.filter(Boolean).length;if(n||d.r)ex.push({n:e[0],p:e[1]+'×'+e[2],w:d.w,k:n,r:d.r||''});d.s=[];d.r=''});S.log.push({n:w.n,d:new Date().toLocaleDateString('ru-RU'),t:Date.now(),ex:ex});S.done=w.id;cur=ORD[(ORD.indexOf(w.id)+1)%4];stopT();save();render();window.scrollTo(0,0)}
+function status(){var n=ORD[(ORD.indexOf(S.done||'')+1)%4],nm=W.filter(function(x){return x.id===n})[0].n,L=S.log[S.log.length-1];document.getElementById('nx').textContent='Следующая по порядку: '+nm+'. Кружок запускает таймер отдыха.';document.getElementById('hist').textContent=L?('Тренировок: '+S.log.length+'. Последняя: '+L.n+', '+L.d):'Завершённых тренировок пока нет.';document.querySelectorAll('[data-r]').forEach(function(b){b.classList.toggle('on',+b.dataset.r===S.rest)});document.getElementById('wl').classList.toggle('on',!!S.keep);document.getElementById('pc').classList.toggle('on',S.pic!==false);document.getElementById('sn').classList.toggle('on',S.snd!==false)}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
 lock();
 render();
