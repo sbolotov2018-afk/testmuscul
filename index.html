@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12171c"><link rel="apple-touch-icon" href="icon-192.png"><title>Программа набора массы</title>
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#1b2430;--mute:#5d6b7a;--line:#d9e0e7;--acc:#0e7c6b;--accsoft:#d8efe9;--onacc:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171c;--card:#1b222a;--ink:#e7ecf0;--mute:#98a6b3;--line:#2b3641;--acc:#3fc1a8;--accsoft:#173a34;--onacc:#0b1a17}}
+:root[data-theme="dark"]{--bg:#12171c;--card:#1b222a;--ink:#e7ecf0;--mute:#98a6b3;--line:#2b3641;--acc:#3fc1a8;--accsoft:#173a34;--onacc:#0b1a17}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+main{max-width:560px;margin:0 auto;padding:16px 14px 110px}
+h1{font-size:22px;margin:4px 0 2px;letter-spacing:-.01em}
+.sub{color:var(--mute);font-size:14px;margin:0 0 14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.tab{min-height:52px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;font:inherit;font-weight:600;padding:6px 8px;text-align:left}
+.tab small{display:block;font-weight:400;color:var(--mute);font-size:12px}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.tab[aria-selected="true"] small{color:var(--onacc);opacity:.85}
+.ex{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.name{font-weight:650;font-size:16px}
+.rep{font-weight:700;color:var(--acc);white-space:nowrap}
+.note{color:var(--mute);font-size:13px;margin:2px 0 0}
+.row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.chip{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-weight:600}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.w{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--mute);font-size:13px}
+.w input{width:76px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;padding:0 8px;text-align:center}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.reset{width:100%;min-height:46px;border:1px dashed var(--line);background:transparent;color:var(--mute);border-radius:12px;font:inherit;margin:4px 0 18px}
+.fin{width:100%;min-height:52px;border:0;background:var(--acc);color:var(--onacc);border-radius:12px;font:inherit;font-weight:700;margin:6px 0 8px}
+.opts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px;color:var(--mute);font-size:14px}
+.tb{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+.tb.on{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.timer{position:fixed;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)}
+.timer.show{display:flex}
+.tv{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.pic{margin:8px 0 0;background:var(--bg);border-radius:10px;padding:6px;color:var(--ink)}.pic svg{display:block;width:100%;height:auto}
+.rr{margin-top:8px;display:flex;align-items:center;gap:8px;color:var(--mute);font-size:13px}.rr input{flex:1;min-width:0;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;padding:0 10px}
+.rules{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px}
+.rules h2{font-size:15px;margin:0 0 6px}
+.rules p{margin:0 0 8px}
+.rules p:last-child{margin:0}
+</style>
+</head>
+<body>
+<main>
+<h1>Программа набора массы</h1>
+<p class="sub" id="nx"></p>
+<div class="opts"><span>Отдых</span><button class="tb" data-r="60">60 с</button><button class="tb" data-r="90">90 с</button><button class="tb" data-r="120">120 с</button><button class="tb" id="wl">Экран не гаснет</button><button class="tb" id="pc">Картинки</button></div>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div id="list"></div>
+<button class="fin" id="fin">Завершить тренировку</button>
+<p class="sub" id="hist"></p><button class="fin" id="snd">Отправить тренировки в чат</button><p class="sub" id="msg"></p>
+<button class="reset" id="reset">Сбросить отметки подходов этой тренировки</button>
+<section class="rules"><h2>Данные</h2><div class="rr"><span>Вес тела</span><input id="bw" type="number" inputmode="decimal" placeholder="кг"><button class="tb" id="bws">Записать</button></div><div class="rr"><button class="tb" id="bk">Резервная копия</button><button class="tb" id="rs">Восстановить</button></div></section><section class="rules" style="margin-top:12px">
+<h2>Порядок</h2>
+<p>Верх A → Низ A → Верх B → 3 дня отдыха → Низ B → Верх A → Низ A → 3 дня отдыха → Верх B → Низ B, и дальше по кругу.</p>
+<h2>Правила</h2>
+<p>Отдых между подходами 60-90 секунд. Первые 2 недели оставляй 3-4 повторения в запасе, дальше 1-2.</p>
+<p>Когда во всех подходах дошёл до верхней границы повторений, замедляй опускание до 3 секунд или переходи на вариант с одной рукой или ногой.</p>
+<p>Раз в неделю взвешивайся утром, раз в 2 недели меряй талию, плечи и руки и делай фото в тех же условиях.</p>
+</section>
+</main>
+<div class="timer" id="tm"><span class="tv" id="tv">0:00</span><span><button class="tb" id="tp">+15 с</button> <button class="tb" id="ts">Стоп</button></span></div>
+<script>
+var W=[
+{id:'vA',n:'Верх A',ex:[
+['Жим гантелей с пола',4,'8-12','Локти касаются пола'],
+['Тяга гантели одной рукой',4,'10-12 на руку','Свободной рукой упор в стул или диван'],
+['Жим гантелей стоя',3,'8-12',''],
+['Подъём на бицепс',3,'10-15',''],
+['Разгибание на трицепс из-за головы',3,'10-15',''],
+['Разведения в стороны',3,'12-20','Боковая дельта']]},
+{id:'nA',n:'Низ A',ex:[
+['Болгарские сплит-приседы',4,'8-12 на ногу','Задняя нога на стуле или диване'],
+['Гоблет-присед с паузой 2 с внизу',3,'12-15',''],
+['Ягодичный мостик на одной ноге',3,'10-15 на ногу','На коврике, с весом'],
+['Подъёмы на носки на одной ноге',4,'12-20','Со ступеньки, пятка ниже носка'],
+['Пресс: скручивания или планка',3,'до усталости','']]},
+{id:'vB',n:'Верх B',ex:[
+['Тяга штанги или двух гантелей в наклоне',4,'8-12',''],
+['Отжимания с ногами на стуле',4,'до 1-2 в запасе','Медленный темп, при нужде с рюкзаком'],
+['Пуловер с гантелью лёжа на полу',3,'12-15','Заменяет вертикальную тягу'],
+['Молотки',3,'10-15',''],
+['Разведения в наклоне',3,'12-20','Задняя дельта'],
+['Шраги',3,'12-15','']]},
+{id:'nB',n:'Низ B',ex:[
+['Румынская тяга (штанга 36 кг или гантели)',4,'8-12',''],
+['Выпады назад',3,'10-12 на ногу',''],
+['Румынская тяга на одной ноге',3,'10-12 на ногу',''],
+['Подъёмы на носки',4,'12-20',''],
+['Подъём ног лёжа',3,'12-15','']]}
+];
+var ST='50,21 50,38|50,38 47,56|50,38 53,56',FR='50,21 50,38|50,38 46,56|50,38 54,56',LY='16,52 44,52 56,40 64,54',CH='22,47 34,47|22,47 22,56',
+BT='64,28 37,25|64,28 60,42 62,56|64,28 66,42 68,56',PU='76,40 90,40|90,40 90,56',
+SH='|44,23 56,23|44,23 41,40|56,23 59,40|*38,40 44,40|*56,40 62,40';
+var P={
+'Жим гантелей с пола':['12,48;'+LY+'|20,52 26,52 26,40|*22,40 30,40','12,48;'+LY+'|20,52 20,32|*16,32 24,32'],
+'Тяга гантели одной рукой':['30,23;'+BT+'|37,25 44,40|38,42 54,42|54,42 54,56|37,25 38,45|*34,45 42,45','30,23;'+BT+'|37,25 44,40|38,42 54,42|54,42 54,56|37,25 52,31 48,40|*45,40 51,40'],
+'Жим гантелей стоя':['50,16;'+ST+'|50,23 56,31 56,21|*52,21 60,21','50,16;'+ST+'|50,23 56,12 56,2|*52,2 60,2'],
+'Подъём на бицепс':['50,16;'+ST+'|50,23 52,33 52,43|*48,43 56,43','50,16;'+ST+'|50,23 52,33 61,28|*58,31 64,25'],
+'Разгибание на трицепс из-за головы':['50,16;'+ST+'|50,23 56,12 47,13|*44,13 50,13','50,16;'+ST+'|50,23 56,12 56,1|*52,1 60,1'],
+'Разведения в стороны':['50,16;'+FR+SH,'50,16;'+FR+'|44,23 56,23|44,23 24,25|56,23 76,25|*24,22 24,28|*76,22 76,28'],
+'Болгарские сплит-приседы':['50,16;50,21 50,38|50,38 60,46 60,56|50,38 40,48 30,46|'+CH,'50,26;50,31 50,46|50,46 62,48 62,56|50,46 40,52 30,46|'+CH],
+'Гоблет-присед с паузой 2 с внизу':['50,16;'+ST+'|50,23 56,30 55,25|*53,25 59,25','44,28;47,33 52,48|52,48 64,46 60,56|47,35 56,40|*55,37 61,37'],
+'Ягодичный мостик на одной ноге':['12,52;16,54 42,54 56,42 62,56|42,54 64,40|*40,50 44,50','12,50;16,52 40,40 56,38 62,56|40,40 66,28|*36,36 44,36'],
+'Подъёмы на носки на одной ноге':['50,16;50,21 50,38|50,38 50,50 58,51|50,38 56,46 50,50|40,52 70,52|40,52 40,56','50,11;50,16 50,33|50,33 50,44 57,49|50,33 56,40 50,44|40,52 70,52|40,52 40,56'],
+'Пресс: скручивания или планка':['12,50;16,53 44,53 56,41 64,55','24,40;28,43 44,53 56,41 64,55'],
+'Тяга штанги или двух гантелей в наклоне':['30,23;'+BT+'|37,25 38,45|*32,45 44,45','30,23;'+BT+'|37,25 50,32 46,38|*42,38 52,38'],
+'Отжимания с ногами на стуле':['23,28;82,38 56,34 30,30|30,30 30,56|'+PU,'23,43;82,38 56,41 30,46|30,46 38,51 30,56|'+PU],
+'Пуловер с гантелью лёжа на полу':['12,48;'+LY+'|20,52 10,38 3,50|*0,50 8,50','12,48;'+LY+'|20,52 20,32|*16,32 24,32'],
+'Молотки':['50,16;'+ST+'|50,23 52,33 52,43|*52,39 52,47','50,16;'+ST+'|50,23 52,33 61,28|*61,23 61,31'],
+'Разведения в наклоне':['50,22;50,27 50,42|50,42 46,56|50,42 54,56|40,28 60,28|40,28 40,46|60,28 60,46|*38,46 42,46|*58,46 62,46','50,22;50,27 50,42|50,42 46,56|50,42 54,56|40,28 60,28|40,28 24,32|60,28 76,32|*24,29 24,35|*76,29 76,35'],
+'Шраги':['50,16;'+FR+SH,'50,17;50,21 50,38|50,38 46,56|50,38 54,56|44,20 56,20|44,20 41,37|56,20 59,37|*38,37 44,37|*56,37 62,37'],
+'Румынская тяга (штанга 36 кг или гантели)':['50,16;50,21 50,38|50,38 49,47 50,56|50,23 52,38|*46,38 58,38','30,24;62,32 37,26|62,32 58,44 60,56|37,28 38,45|*33,45 44,45'],
+'Выпады назад':['50,16;'+ST,'50,26;50,31 50,46|50,46 62,48 62,56|50,46 42,54 32,52'],
+'Румынская тяга на одной ноге':['50,16;50,21 50,38|50,38 50,56|50,38 56,46 50,52','20,30;24,31 50,31|50,31 50,56|50,31 82,30'],
+'Подъём ног лёжа':['12,48;16,52 44,52|44,52 76,50','12,48;16,52 44,52|44,52 46,24']};
+P['Подъёмы на носки']=P['Подъёмы на носки на одной ноге'];
+function fr(s){var p=s.split(';'),h=p[0].split(','),o='<circle cx="'+h[0]+'" cy="'+h[1]+'" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="0" y1="57" x2="100" y2="57" stroke="var(--line)" stroke-width="1.5"/>';p[1].split('|').forEach(function(l){if(!l)return;var t=l[0]==='*';o+='<polyline points="'+(t?l.slice(1):l)+'" fill="none" stroke="'+(t?'var(--acc)':'currentColor')+'" stroke-width="'+(t?4:2.4)+'" stroke-linecap="round" stroke-linejoin="round"/>'});return o}
+function pic(n){var a=P[n];if(S.pic===false||!a)return'';return '<div class="pic"><svg viewBox="0 -4 212 64" role="img" aria-label="'+n+': начало и конец"><text x="2" y="2" font-size="7" fill="var(--mute)">начало</text><text x="114" y="2" font-size="7" fill="var(--mute)">конец</text>'+fr(a[0])+'<g transform="translate(112 0)">'+fr(a[1])+'</g></svg></div>'}
+var KEY='muscle-program-v1',S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){S={}}
+if(!S.d)S.d={};if(!S.rest)S.rest=90;if(!S.log)S.log=[];if(!S.body)S.body=[];try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+var cur=S.t||'vA';
+function save(){try{S.t=cur;localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function lastEx(n){for(var i=S.log.length-1;i>=0;i--){var x=S.log[i].ex;if(x)for(var j=0;j<x.length;j++)if(x[j].n===n)return x[j]}return{w:'',r:''}}
+function msg(t){document.getElementById('msg').textContent=t}
+function report(){var o='Данные тренировок (программа набора массы, цель: набрать мышечную массу).\n',L=S.log.filter(function(x){return x.ex}).slice(-6);
+ if(S.body.length)o+='Вес тела: '+S.body.slice(-6).map(function(b){return b.d+' '+b.w+' кг'}).join(', ')+'\n';
+ if(!L.length)o+='\nЗавершённых тренировок с записями пока нет.\n';
+ L.forEach(function(x){o+='\n'+x.d+' — '+x.n+'\n';x.ex.forEach(function(e){o+='• '+e.n+' ('+e.p+'): '+(e.w||'вес не записан')+' кг, подходов '+e.k+', повторения: '+(e.r||'не записаны')+'\n'})});
+ return o+'\nРазбери прогресс: где пора добавить вес, где застой, что поправить в программе.'}
+async function send(t){try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(t);msg('Скопировано. Вставь в чат с Claude.')}catch(e){prompt('Скопируй текст и вставь в чат',t)}}
+function get(k){return S.d[k]||(S.d[k]={w:'',s:[]})}
+function find(){for(var i=0;i<W.length;i++)if(W[i].id===cur)return W[i];return W[0]}
+function render(){
+ var t='',i;
+ for(i=0;i<W.length;i++){
+  var x=W[i],tot=0,done=0;
+  x.ex.forEach(function(e,j){tot+=e[1];var d=S.d[x.id+j];if(d)done+=d.s.filter(Boolean).length});
+  t+='<button class="tab" role="tab" aria-selected="'+(x.id===cur)+'" data-t="'+x.id+'">'+x.n+'<small>'+done+' из '+tot+' подходов</small></button>';
+ }
+ document.getElementById('tabs').innerHTML=t;
+ var w=find(),h='';
+ w.ex.forEach(function(e,j){
+  var k=w.id+j,d=get(k),c='',le=lastEx(e[0]);
+  for(var s=0;s<e[1];s++)c+='<button class="chip'+(d.s[s]?' on':'')+'" data-k="'+k+'" data-s="'+s+'" aria-label="Подход '+(s+1)+'" aria-pressed="'+(!!d.s[s])+'">'+(s+1)+'</button>';
+  h+='<div class="ex"><div class="top"><span class="name">'+e[0]+'</span><span class="rep">'+e[1]+' × '+e[2]+'</span></div>'+(e[3]?'<p class="note">'+e[3]+'</p>':'')+pic(e[0])+'<div class="row">'+c+'<label class="w">Вес, кг <input type="number" inputmode="decimal" data-k="'+k+'" value="'+d.w+'" placeholder="'+(le.w||'')+'"></label></div><div class="rr"><span>Повт.</span><input type="text" data-p="'+k+'" value="'+(d.r||'')+'" placeholder="'+(le.r||'10 10 9 8')+'"></div></div>';
+ });
+ document.getElementById('list').innerHTML=h;status();
+}
+document.addEventListener('click',function(ev){
+ var b=ev.target.closest('button');if(!b)return;
+ if(b.dataset.t){cur=b.dataset.t;save();render();window.scrollTo(0,0);return}
+ if(b.dataset.k){var d=get(b.dataset.k),s=+b.dataset.s;d.s[s]=!d.s[s];save();render();if(d.s[s])startT(S.rest);return}
+ if(b.dataset.r){S.rest=+b.dataset.r;save();status();return}
+ if(b.id==='wl'){S.keep=!S.keep;if(!S.keep&&wake){wake.release();wake=null}else lock();save();status();return}
+ if(b.id==='snd'){send(report());return}
+ if(b.id==='bws'){var v=document.getElementById('bw').value;if(v){S.body.push({d:new Date().toLocaleDateString('ru-RU'),w:v});save();msg('Вес тела записан: '+v+' кг');document.getElementById('bw').value=''}return}
+ if(b.id==='bk'){send(JSON.stringify({log:S.log,d:S.d,body:S.body,rest:S.rest,done:S.done}));return}
+ if(b.id==='rs'){var t=prompt('Вставь текст резервной копии');if(t){try{var o=JSON.parse(t);S.log=o.log||[];S.d=o.d||{};S.body=o.body||[];S.rest=o.rest||90;S.done=o.done;save();render();msg('Данные восстановлены')}catch(e){msg('Не получилось прочитать копию')}}return}
+ if(b.id==='pc'){S.pic=S.pic===false;save();render();return}if(b.id==='fin'){finish();return}
+ if(b.id==='tp'){if(!iv)endAt=Date.now();endAt+=15000;if(!iv)iv=setInterval(tick,250);tick();return}
+ if(b.id==='ts'){stopT();return}
+ if(b.id==='reset'){var w=find();w.ex.forEach(function(e,j){get(w.id+j).s=[]});save();render()}
+});
+document.addEventListener('input',function(ev){
+ var i=ev.target;if(i.tagName==='INPUT'&&i.dataset.k){get(i.dataset.k).w=i.value;save()}if(i.tagName==='INPUT'&&i.dataset.p){get(i.dataset.p).r=i.value;save()}
+});
+var ORD=['vA','nA','vB','nB'],endAt=0,iv=null,wake=null,ac=null;
+function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)}
+function tick(){var r=Math.ceil((endAt-Date.now())/1000),tv=document.getElementById('tv');if(r>0){tv.textContent=fmt(r)}else{tv.textContent='Отдых закончен';clearInterval(iv);iv=null;alarm()}}
+function startT(sec){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.resume)ac.resume()}catch(e){}endAt=Date.now()+sec*1000;document.getElementById('tm').classList.add('show');clearInterval(iv);iv=setInterval(tick,250);tick()}
+function stopT(){clearInterval(iv);iv=null;document.getElementById('tm').classList.remove('show')}
+function alarm(){try{if(navigator.vibrate)navigator.vibrate([250,120,250,120,400])}catch(e){}try{if(ac){var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.4)}}catch(e){}}
+async function lock(){try{if(S.keep&&navigator.wakeLock&&!wake){wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',function(){wake=null})}}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){lock();if(iv)tick()}});
+function finish(){var w=find(),ex=[];w.ex.forEach(function(e,j){var d=get(w.id+j),n=d.s.filter(Boolean).length;if(n||d.r)ex.push({n:e[0],p:e[1]+'×'+e[2],w:d.w,k:n,r:d.r||''});d.s=[];d.r=''});S.log.push({n:w.n,d:new Date().toLocaleDateString('ru-RU'),t:Date.now(),ex:ex});S.done=w.id;cur=ORD[(ORD.indexOf(w.id)+1)%4];stopT();save();render();window.scrollTo(0,0)}
+function status(){var n=ORD[(ORD.indexOf(S.done||'')+1)%4],nm=W.filter(function(x){return x.id===n})[0].n,L=S.log[S.log.length-1];document.getElementById('nx').textContent='Следующая по порядку: '+nm+'. Кружок запускает таймер отдыха.';document.getElementById('hist').textContent=L?('Тренировок: '+S.log.length+'. Последняя: '+L.n+', '+L.d):'Завершённых тренировок пока нет.';document.querySelectorAll('[data-r]').forEach(function(b){b.classList.toggle('on',+b.dataset.r===S.rest)});document.getElementById('wl').classList.toggle('on',!!S.keep);document.getElementById('pc').classList.toggle('on',S.pic!==false)}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+lock();
+render();
+</script>
+</body>
+</html>
